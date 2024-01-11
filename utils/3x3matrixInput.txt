@@ -1,0 +1,6 @@
+<div style="text-align: 'center';">
+	<h2>Quadrato magico:</h2><br>
+	<input type="text" size="2" id="a0" onkeyup="myFunction(this)"> <input type="text" size="2" id="a1" onkeyup="myFunction(this)"> <input type="text" size="2" id="a2" onkeyup="myFunction(this)"><br>
+	<input type="text" size="2" id="a3" onkeyup="myFunction(this)"> <input type="text" size="2" id="a4" onkeyup="myFunction(this)"> <input type="text" size="2" id="a5" onkeyup="myFunction(this)"><br>	
+	<input type="text" size="2" id="a6" onkeyup="myFunction(this)"> <input type="text" size="2" id="a7" onkeyup="myFunction(this)"> <input type="text" size="2" id="a8" onkeyup="myFunction(this)"><br>
+</div>

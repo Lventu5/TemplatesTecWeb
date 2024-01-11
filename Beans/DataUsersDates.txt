@@ -1,0 +1,83 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class Data implements Serializable {
+	private Map<User, Integer> groups;
+	private Map<Integer, Boolean> groupUpdate;
+
+	private static final long serialVersionUID = 1L;
+	
+	public Data() {
+		super();
+		groups = new HashMap<>();
+		groupUpdate = new HashMap<>();
+		
+		groups.put(new User("peppe","brescia",LocalDateTime.of(2023,12,1,12,0)), 1);
+		groups.put(new User("pippo","nana",LocalDateTime.of(2023,10,1,12,0)), 1);
+		groups.put(new User("abcd","1234",LocalDateTime.of(2023,9,1,12,0)), 2);
+		groups.put(new User("io","2345",LocalDateTime.of(2023,5,1,12,0)), 2);
+		groups.put(new User("aaa","aaa",LocalDateTime.of(2023,12,5,12,0)), 2);
+		groups.put(new User("aaaa","aaaa",LocalDateTime.of(2023,1,5,12,0)), 2);
+		groups.put(new User("aaaaa","aaaaa",LocalDateTime.of(2023,2,5,12,0)), 2);
+		groups.put(new User("bbb","bbb",LocalDateTime.of(2023,11,5,12,0)), 3);
+		groups.put(new User("ccc","ccc",LocalDateTime.of(2023,12,5,12,0)), 3);
+		groups.put(new User("ddd","ddd",LocalDateTime.of(2023,2,5,12,0)), 3);
+		
+		groupUpdate.put(1, false);
+		groupUpdate.put(2, false);
+		groupUpdate.put(3, false);
+	}
+	
+	public Map<User, Integer> getGroups(){
+		return groups;
+	}
+	
+	public Map<Integer, Boolean> getGroupUpdates(){
+		return this.groupUpdate;
+	}
+	
+	public boolean isReg(String uName, String pwd) {
+		for(User u : groups.keySet()) {
+			if(u.getUname().equals(uName) && u.getPwd().equals(pwd)) return true;
+		}
+		return false;
+	}
+	
+	public int getGroupId(String uName, String pwd) {
+		for(Entry<User, Integer> e : groups.entrySet()) {
+			if(e.getKey().getUname().equals(uName) && e.getKey().getPwd().equals(pwd))
+				return e.getValue().intValue();
+		}
+		return -1;
+	}
+	
+	public synchronized User getUser(String uName, String pwd) {
+		for(User u : groups.keySet()) {
+			if(u.getUname().equals(uName) && u.getPwd().equals(pwd)) return u;
+		}
+		return null;
+	}
+	
+	public synchronized void groupUpdate(String uName, String pwd) {
+		int result = (int) groups.entrySet().stream()
+		.filter(e -> e.getValue()==this.getGroupId(uName, pwd))
+		.filter(el -> el.getKey().mustUpdate())
+		.count();
+		
+		if(result>3) groupUpdate.put(this.getGroupId(uName, pwd), true);
+		else if(result==0) groupUpdate.put(this.getGroupId(uName, pwd), false);
+	}
+	
+	public synchronized void setPassword(String uName, String pwd, String newPwd) {
+		this.getUser(uName, pwd).updateData();
+		this.getUser(uName, pwd).setPwd(newPwd);
+		
+		groupUpdate(uName,newPwd);
+	}
+	
+}

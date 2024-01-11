@@ -1,0 +1,70 @@
+package servlets;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+import javax.websocket.*;
+import javax.websocket.server.*;
+
+import com.google.gson.Gson;
+
+import beans.OperationReq2;
+import java.util.*;
+import java.util.Map.Entry;
+
+
+@ServerEndpoint("/actions")
+public class ProvaWS{
+	static private Map<String, LocalDateTime> results = new HashMap<>();
+	static private Map<Session,String> subscribers = new HashMap<>();
+	
+	@OnMessage
+	public void messageHandler(String message, Session session) {
+		Gson g = new Gson();
+		OperationReq2 req = (OperationReq2)g.fromJson(message, OperationReq2.class);
+		
+		if(req.getUser().equals("user") && !subscribers.containsKey(session)) {
+			subscribers.put(session,req.getValue());
+			try {
+				session.getBasicRemote().sendText("Iscritto correttamente<br/>");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(req.getUser().equals("admin")) {
+			if(req.getType()==1) {
+				String gen=req.getValue().split(",")[2];
+				results.put(req.getValue().replace("<", "").replace(">", "").replace(","+gen+",", " ").replace(",","-"), LocalDateTime.now());
+				for(Entry<Session,String> e : subscribers.entrySet()) {
+					if(e.getValue().equals(gen)) {
+						try {
+							e.getKey().getBasicRemote().sendText(req.getValue().replace("<", "").replace(">", "").replace(","+gen+",", " ").replace(",","-"));
+						} catch (IOException ee) {
+							ee.printStackTrace();
+						}
+					}
+				}
+			}
+			else if(req.getType()==2){
+				StringBuilder sb = new StringBuilder();
+				List<String> temp = results.entrySet().stream()
+														.filter(en -> en.getValue().isAfter(LocalDateTime.now().minusHours(24)))
+														.sorted(Comparator.comparing(Entry<String,LocalDateTime>::getValue))
+														.map(e -> e.getKey())
+														.toList();
+				temp.forEach(el -> sb.append(el+"<br/>"));
+				
+				try {
+					session.getBasicRemote().sendText(sb.toString());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	
+	
+
+}

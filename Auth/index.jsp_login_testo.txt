@@ -1,0 +1,62 @@
+<%@ page session="true"%>
+<%@ page import="it.unibo.tw.web.servlets.AuthServlet" %>
+
+<jsp:useBean id="dati" class="it.unibo.tw.web.beans.Data" scope="application"/>
+
+<html>
+   <head>
+      <title>Data Augmentation</title>
+		<link type="text/css" href="styles/default.css" rel="stylesheet"></link>
+   </head>
+   <body>
+      <% 
+      	session.setAttribute("Auth", false);
+      	int num;   	
+      %>
+   	  <fieldset>
+   	  		<legend>Log-In</legend>
+   	  		<form name="loginForm" action="<%= request.getContextPath() %>/auth" method="post">
+   	  			<table>
+   	  				<tr>
+	   	  				<th style="width: 25%">Username</th>
+						<th style="width: 25%">Password</th>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+		   	  				<input type="text" name="username" id="username">
+		   	  			</td>
+		   	  			<td style="text-align: center;">
+		   	  				<input type="password" name="pass" id="pass">
+		   	  			</td>
+	   	  			</tr>
+   	  			</table>
+   	  			<input type="hidden" name="type" value="log">
+   	  			<input type="submit" name="login" value="Login">
+   	  		</form>
+   	  </fieldset>
+   	  <fieldset>
+   	  		<legend>Register</legend>
+   	  		<form name="register" action="<%= request.getContextPath() %>/auth" method="post">
+   	  			<table>
+   	  				<tr>
+	   	  				<th style="width: 25%">Username</th>
+						<th style="width: 25%">Password</th>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+		   	  				<input type="text" name="username" id="username">
+		   	  			</td>
+		   	  			<td style="text-align: center;">
+		   	  				<input type="password" name="pass" id="pass">
+		   	  			</td>
+	   	  			</tr>
+   	  			</table>
+   	  			<input type="hidden" name="type" value="reg">
+   	  			<input type="submit" name="register" value="Register">
+   	  		</form>
+   	  </fieldset>
+
+   </body>
+</html>
+
+

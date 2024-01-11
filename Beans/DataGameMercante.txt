@@ -1,0 +1,96 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.http.HttpSession;
+
+public class Data implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	private Map<String,String> utenti; 
+	private Map<String,HttpSession> results;
+	private Map<User, List<Integer>> gioco;
+	private boolean gameOn;
+	private LocalDateTime start;
+	private int winner;
+	private Map<Integer,LocalDateTime> selling;
+	
+	public Data() {
+		super();
+		
+		utenti = new HashMap<>();
+		
+		results = new HashMap<>();
+		
+		gioco = new HashMap<>();
+		
+		gameOn = false;
+		
+		selling = new HashMap<>();
+	}
+
+	public Map<String, String> getUtenti() {
+		return utenti;
+	}
+
+	public Map<User, List<Integer>> getGioco() {
+		return gioco;
+	}
+	
+	public Map<String, HttpSession> getResults() {
+		return results;
+	}
+
+	public boolean isGameOn() {
+		return gameOn;
+	}
+
+	public void setGameOn(boolean gameOn) {
+		this.gameOn = gameOn;
+		this.start = LocalDateTime.now();
+	}
+	
+	public LocalDateTime getStart() {
+		return start;
+	}
+	
+	public int getWinner() {
+		return winner;
+	}
+
+	public void setWinner() {
+		Random r = new Random();
+		this.winner = r.nextInt(0, 30);
+	}
+	
+	public Map<Integer, LocalDateTime> getSelling() {
+		return selling;
+	}
+
+	public synchronized boolean isRegistered(String un) {
+		return utenti.containsKey(un);
+	}
+	
+	public synchronized boolean validLogin(String un, String pw) {
+		return (this.isRegistered(un) && utenti.get(un)!=null && utenti.get(un).equals(pw));
+	}
+	
+	public synchronized void addUser(User u) {
+		if(this.gioco.size()<3 && !this.gioco.containsKey(u)) {
+			this.gioco.put(u, new ArrayList<>());
+			int i = this.gioco.size();
+			for(int j=((i-1)*10); j<(i*10); j++) {
+				this.gioco.get(u).add(j);
+			}
+		}
+		if(this.gioco.size()==3 && !this.isGameOn()) this.setGameOn(true);
+	}
+}

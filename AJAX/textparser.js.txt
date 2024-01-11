@@ -1,0 +1,64 @@
+function parseJson(text) {
+	var res = JSON.parse(text);
+	risultato = "" + res.res;
+	return risultato
+};
+
+function callback( theXhr, theElement ) {
+	theElement.class = "content";
+	
+	if ( theXhr.readyState === 2 ) {
+	    	theElement.innerHTML = "Richiesta inviata...";
+	}
+	else if ( theXhr.readyState === 3 ) {
+    		theElement.innerHTML = "Ricezione della risposta...";
+	}
+	else if ( theXhr.readyState === 4 ) {
+		if ( theXhr.status === 200 ) {
+			if ( theXhr.responseText ) {
+				theElement.value = parseJson(theXhr.responseText);
+			}
+			else {
+				theElement.value = "error while parsing JSON:" +
+				theXhr.responseText;
+			}
+
+		}
+
+		else {
+			theElement.innerHTML = "Impossibile effettuare l'operazione richiesta.<br />";
+			theElement.innerHTML += "Errore riscontrato: " + theXhr.statusText;
+		}
+	}
+
+} 
+
+function caricaTestoIframe(theUri,theHolder,text) {
+	theHolder.innerHTML = '<iframe src="' + theUri + '/' + text + '" width="50%" height="50px">Il tuo browser non supporta gli iframe</iframe>';
+}
+
+
+function caricaTestoAJAX(theUri, theElement, theXhr, text) {
+	theXhr.onreadystatechange = function() { callback(theXhr, theElement); };
+	try {
+		theXhr.open("post", theUri, true);
+	}
+	catch(e) {
+		alert(e);
+	}
+	
+	theXhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
+
+	theXhr.send(JSON.stringify({ "val" : text }));
+
+}
+
+function caricaTesto(uri,e,text) {
+
+	var xhr = new XMLHttpRequest();
+
+	if ( xhr ) 
+		caricaTestoAJAX(uri,e,xhr,text); 
+	else 
+		caricaTestoIframe(uri,e,text); 
+}

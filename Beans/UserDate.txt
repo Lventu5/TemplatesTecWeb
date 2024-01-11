@@ -1,0 +1,47 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+public class User implements Serializable {
+	private String uName, pwd;
+	private LocalDateTime dataModifica;
+
+	private static final long serialVersionUID = 1L;
+	
+	public User(String name, String pwd, LocalDateTime ldt) {
+		super();
+		this.uName=name;
+		this.pwd=pwd;
+		this.dataModifica = ldt;
+	}
+	
+	public String getUname() {
+		return this.uName;
+	}
+	
+	public String getPwd() {
+		return this.pwd;
+	}
+	
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+	
+	public LocalDateTime getData() {
+		return this.dataModifica;
+	}
+	
+	public void updateData() {
+		this.dataModifica = LocalDateTime.now();
+	}
+
+	public boolean mustUpdate() {
+		return Duration.between(dataModifica, LocalDateTime.now()).toDays()>60;
+	}
+	
+	public long daysLeft() {
+		return Duration.between(LocalDateTime.now(), dataModifica.plusDays(60)).toDays();
+	}
+}

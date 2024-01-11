@@ -1,0 +1,36 @@
+package servlets;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServlet;
+import javax.websocket.*;
+import javax.websocket.server.*;
+
+import com.google.gson.Gson;
+
+import beans.OperationEncoder;
+import beans.OperationReq2;
+import java.util.*;
+
+
+@ServerEndpoint(
+		value = "/actions",
+		encoders = {OperationEncoder.class}
+			)
+public class ProvaWS{
+	
+	@OnMessage
+	public void messageHandler(String message, Session session) {
+		Gson g = new Gson();
+		OperationReq2 req = (OperationReq2)g.fromJson(message, OperationReq2.class);
+		
+		for (Session s : session.getOpenSessions()) {
+			try {
+				s.getBasicRemote().sendObject(req);
+			} catch (IOException | EncodeException e) {
+				e.printStackTrace();
+			}
+		}
+	}	
+
+}

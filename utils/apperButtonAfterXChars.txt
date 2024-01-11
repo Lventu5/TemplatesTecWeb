@@ -1,0 +1,9 @@
+document.getElementById("text").onkeyup = function() {
+	var regex = /^[a-zA-Z0-9]+$/;
+	if(this.value.length >= 100){
+		document.getElementById("send").style.display = 'block';
+	}
+	if (!this.value.slice(-1).match(regex)){
+		this.value=this.value.slice(0,-1);
+	}
+};

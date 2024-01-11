@@ -1,0 +1,9 @@
+package it.unibo.tw.web.beans;
+
+public class Articolo {
+	private String name, content;
+	public String getContent(){ return content; }
+	public String getName() { return name;}
+	public void write(String s) { this.content+=s; }
+	public Articolo(String n, String c) {content=c; name = n;}
+}

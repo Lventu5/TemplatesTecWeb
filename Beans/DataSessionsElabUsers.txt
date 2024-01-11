@@ -1,0 +1,61 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+public class Data implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Map<String, HttpSession> sessions;
+	private Map<String, Integer> elaborazioni;
+	private List<LocalDateTime> elabTimes;
+	private Map<String, String> utenti;
+	
+	public Data() {
+		super();
+		sessions = new HashMap<>();
+		
+		elaborazioni = new HashMap<>();
+		
+		elabTimes = new ArrayList<>();
+		
+		utenti = new HashMap<>();
+		utenti.put("admin", "admin");
+	}
+	
+	public Map<String, HttpSession> getSessions() {
+		return sessions;
+	}
+	
+	public Map<String, Integer> getElaborazioni() {
+		return elaborazioni;
+	}
+	
+	public List<LocalDateTime> getElabTimes() {
+		return this.elabTimes;
+	}
+	
+	public synchronized long elabsIn(int days){
+		return elabTimes.stream().filter(ldt -> Duration.between(ldt, LocalDateTime.now()).toDays()<=days).count();
+	}
+	
+	public Map<String, String> getUtenti() {
+		return utenti;
+	}
+	
+	public synchronized boolean isRegistered(String un) {
+		return utenti.containsKey(un);
+	}
+	
+	public synchronized boolean validLogin(String un, String pw) {
+		return (this.isRegistered(un) && utenti.get(un)!=null && utenti.get(un).equals(pw));
+	}
+}

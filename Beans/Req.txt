@@ -1,0 +1,7 @@
+package it.unibo.tw.web.beans;
+
+public class Req {
+	private String val;
+	public String getVal(){ return val; }
+	public Req(String s) {val=s;}
+}

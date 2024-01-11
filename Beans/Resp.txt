@@ -1,0 +1,9 @@
+package it.unibo.tw.web.beans;
+
+public class Resp {
+	private String val;
+	private int num;
+	public String getVal(){ return val; }
+	public int getNum() { return num;}
+	public Resp(String s, int n) {val=s; num = n;}
+}

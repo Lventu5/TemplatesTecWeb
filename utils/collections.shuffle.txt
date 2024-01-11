@@ -1,0 +1,13 @@
+String temp="";
+List<String> chr = Arrays.asList(text.split(""));
+		
+for(int i=0;i<5;i++) {
+	temp="";
+	do {
+		Collections.shuffle(chr);
+	} while(vowels.indexOf(chr.get(0).charAt(0)) != -1);
+			
+	for( String s : chr) {
+		temp+=s;
+	}
+}

@@ -1,0 +1,47 @@
+package servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import beans.Request;
+import beans.Result;
+
+public class S1 extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/xml");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter writer = response.getWriter();
+		Gson g = new Gson();
+		Request req = (Request)g.fromJson(request.getReader(), Request.class);
+		
+		List<Integer> vals = Arrays.stream(req.getNums()).map(s -> Integer.parseInt(s)).toList();
+		int somma1 = vals.get(0).intValue()+vals.get(1).intValue()+vals.get(2).intValue()+vals.get(3).intValue()+vals.get(4).intValue(),
+				somma2 = vals.get(5).intValue()+vals.get(6).intValue()+vals.get(7).intValue()+vals.get(8).intValue()+vals.get(9).intValue(),
+				somma3 = vals.get(10).intValue()+vals.get(11).intValue()+vals.get(12).intValue()+vals.get(13).intValue()+vals.get(14).intValue(),
+				somma4 = vals.get(15).intValue()+vals.get(16).intValue()+vals.get(17).intValue()+vals.get(18).intValue()+vals.get(19).intValue(),
+				somma5 = vals.get(20).intValue()+vals.get(21).intValue()+vals.get(22).intValue()+vals.get(23).intValue()+vals.get(24).intValue();
+		Result res = null;
+		
+		if(somma1 == somma2 && somma2 == somma3 && somma3 == somma4 && somma4 == somma5) {
+			res = new Result("true", somma1);
+		}
+		else res = new Result("false", -1);
+		
+		writer.append("<root>").append("<res>").append(res.getRes()).append("</res>")
+								.append("<sum>").append(String.valueOf(res.getSomma())).append("</sum>")
+								.append("</root>");
+	}
+}

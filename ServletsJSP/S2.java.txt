@@ -1,0 +1,59 @@
+package it.unibo.tw.web.servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+public class S2 extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	private static class Result {
+		public String res;
+		public Result(String r){
+			this.res = r;
+		}
+		public String getResult() {
+			return this.res;
+		}
+	}
+
+	@Override
+	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter writer = response.getWriter();
+		String val = request.getParameter("val");
+		Gson g = new Gson();
+		
+		StringBuilder sb = new StringBuilder();
+		int count = 1, avg = 0;
+		char c;
+		
+		for(int i=0;i<val.length();i++){
+			c = val.charAt(i);
+			if(count<4){
+				avg += Integer.parseInt(String.valueOf(c));
+				count++;
+				sb.append(c);
+			}
+			else if(count==4){
+				avg += Integer.parseInt(String.valueOf(c));
+				avg = avg/4;
+				sb.append(c);
+				sb.append(avg);
+				avg = 0;
+				count = 1;
+			}
+		}
+		
+		writer.append(g.toJson(new Result(sb.toString())));
+	}
+
+}

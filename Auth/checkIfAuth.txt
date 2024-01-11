@@ -1,0 +1,28 @@
+<%@ page session="true"%>
+<%@ page import="it.unibo.tw.web.beans.Data" %>
+<%@page import="java.util.*"%>
+
+<jsp:useBean id="dati" class="it.unibo.tw.web.beans.Data" scope="application"/>
+
+<html>
+   <head>
+      <title>Admin page</title>
+		<link type="text/css" href="styles/somestyle.css" rel="stylesheet"></link>
+   </head>
+   <body>
+      <%  
+      	if((boolean)dati.getSessions().get(session.getId()).getAttribute("Auth")){
+
+      %>
+
+<%
+      	}
+      	else{
+	  %>
+	  		<h2>Login necessario per visualizzare la pagina</h2>
+	  		<a href="<%= request.getContextPath() %>/index.jsp">Effettua il login</a>
+	  <%
+      	}
+	  %>
+   </body>
+</html>

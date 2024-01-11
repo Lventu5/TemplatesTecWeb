@@ -1,0 +1,35 @@
+			<script type="text/javascript">
+   	  	   		myGetElementById("text").onkeyup = function() {
+   	  	   			var regex = /^[a-zA-Z]+$/;
+   	  	   			if(this.value.slice(-1)==='\u20ac'){
+   	  	   				this.value=this.value.slice(0,-1);
+		   	  	   		fetch('s1', {
+			  				   method: 'POST',
+			  				 	headers: {
+			  					'Accept': 'application/json',
+			  				    'Content-Type': 'application/json',
+			  				    'charset': 'UTF-8'
+			  				  	},
+			  				  	body: JSON.stringify({
+			  					  val: this.value,
+			  					  str: myGetElementById("str").value
+			  				  	}),
+			  				  	cache: 'no-store'
+			  			   })
+			  			   .then(response => response.json())
+			  			   .then((data) => {
+			  				   document.getElementById('res').innerHTML = data.val+"<br/>"+data.num
+			  			   }) 
+   	  	   			}
+   	  	   			else if (!this.value.slice(-1).match(regex)){
+		  			   this.value=this.value.slice(0,-1);
+		  		    }
+   	     		};
+   	     		
+   	     		myGetElementById("str").onkeyup = function() {
+	   	     		var regex = /^[a-zA-Z]+$/;
+		  		    if (!this.value.slice(-1).match(regex)){
+		  			   this.value=this.value.slice(0,-1);
+		  		    }
+		  		};
+   	  	   </script>

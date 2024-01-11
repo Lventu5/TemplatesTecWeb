@@ -1,0 +1,38 @@
+<%@page import="it.unibo.tw.web.beans.Req"%>
+<%@page import="com.google.gson.JsonObject"%>
+<%@ page session="true"%>
+<%@ page import="com.google.gson.Gson" %>
+<jsp:useBean id="dati" class="it.unibo.tw.web.beans.Data" scope="application"/>
+
+<%
+	Gson g = new Gson();
+	Req params = (Req)g.fromJson(request.getReader(), Req.class);
+	
+	String val = params.getVal();
+	int processed = (int)session.getAttribute("num");
+	
+	
+	StringBuilder sb = new StringBuilder();
+	int count = 1, avg = 0, left = 500 - processed, i;
+	char c;
+	for(i=0;i<val.length() && i<left;i++){
+		c = val.charAt(i);
+		if(count<3){
+			avg += Integer.parseInt(String.valueOf(c));
+			count++;
+			sb.append(c);
+		}
+		else if(count==3){
+			avg += Integer.parseInt(String.valueOf(c));
+			avg = avg/3;
+			sb.append(c);
+			sb.append(avg);
+			avg = 0;
+			count = 1;
+		}
+	}
+	session.setAttribute("num",(processed+i));
+%>
+<jsp:forward page="/s2"> 
+	<jsp:param name="val" value='<%= sb.toString() %>' /> 
+</jsp:forward> 

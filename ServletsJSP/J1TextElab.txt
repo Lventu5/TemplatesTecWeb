@@ -1,0 +1,14 @@
+<%@ page session="true"%>
+<%@ page import="java.util.Random"%>
+<jsp:useBean id="dati" class="it.unibo.tw.web.beans.Data" scope="application"/>
+
+<%
+	dati.startRequest(session, Thread.currentThread());
+	Random r = new Random();
+	char c = (char)(r.nextInt(26) + 'a');
+	//response.sendRedirect("http://localhost:8080/EsameTWT110122/s2");
+	System.out.println(request.getParameter("text"));
+%>
+<jsp:forward page="/s2"> 
+	<jsp:param name="text" value='<%= request.getParameter("text").replace(""+c,"") %>' /> 
+</jsp:forward> 

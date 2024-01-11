@@ -1,0 +1,50 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+
+import javax.servlet.http.HttpSession;
+
+public class Drink implements Serializable {
+	private String name, state;
+	private double price;
+	private HttpSession sess;
+
+	private static final long serialVersionUID = 1L;
+
+	public Drink(String name, String state, double price, HttpSession sess) {
+		super();
+		this.name = name;
+		this.state = state;
+		this.price = price;
+		this.sess = sess;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public HttpSession getSess() {
+		return sess;
+	}
+
+}

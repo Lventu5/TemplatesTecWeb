@@ -1,0 +1,23 @@
+<a href="?terminate=<%= e.getKey().threadId() %>">Termina</a></li>
+
+//-------------------------------------------------------------------		
+
+		String term = request.getParameter("terminate");
+      		if(term != null && !term.isBlank()){
+	      		long stop=Long.parseLong(term);
+		      		dati.killRequest(stop);
+		      		%> <p>Terminata sessione <%= term %> </p> <%
+      		}
+
+
+//-------------------------------------------------------------------	
+
+		String term = request.getParameter("terminate");
+      		if(term != null && !term.isBlank()){
+	      		HttpSession sess = dati.getSessions().keySet().stream().filter(s -> s.getId().equals(term)).findFirst().get();
+		      	dati.getSessions().put(sess, true);
+		      		%> <p>Terminata sessione <%= term %> </p> <%
+      		}
+
+
+//-------------------------------------------------------------------

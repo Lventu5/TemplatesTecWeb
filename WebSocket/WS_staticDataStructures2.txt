@@ -1,0 +1,95 @@
+package servlets;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+import javax.websocket.*;
+import javax.websocket.server.*;
+
+import beans.FileWatcher;
+import java.util.*;
+
+
+@ServerEndpoint("/actions")
+public class ProvaWS{
+	static private Map<Session,LocalDateTime> subscribers = new HashMap<>();
+	private final static String PATH = "D:\\loren\\eclipse-workspace\\es3221222\\web\\risultati.txt\\";
+	private static boolean set = false;
+	
+	static private FileWatcher task = new FileWatcher( new File(PATH) ) {
+	    protected void onChange( File file ) {
+	    	
+	    	String text = "", line=null;
+	    	try(BufferedReader rd = new BufferedReader(new FileReader(file))){
+				while((line=rd.readLine())!=null) text+=line;
+				for(Session s : subscribers.keySet()) {
+					s.getBasicRemote().sendText(text);
+				}
+    		} catch (IOException e) {
+			e.printStackTrace();
+    		}
+	    	
+	    }
+	};
+	
+	static private Timer timer = new Timer();
+	
+	@OnOpen
+	public void open(Session session) {
+		if(!set) {
+			timer = new Timer();
+			timer.schedule( task , new Date(), 1000 );
+			set = true;
+		}
+	}
+	
+	@OnMessage
+	public void messageHandler(String message, Session session) {
+		
+		if(message.equals("user") && !subscribers.containsKey(session)) {
+			subscribers.put(session,LocalDateTime.now());
+			try {
+				session.getBasicRemote().sendText("Iscritto correttamente<br/>");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(message.equals("admin")) {
+			StringBuilder sb = new StringBuilder();
+			subscribers.entrySet().forEach(el -> sb.append(el.getKey().getId()+", "+el.getValue()+"<br>"));
+			
+			try {
+				session.getBasicRemote().sendText(sb.toString());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		else {
+			String name = message.split(",")[0];
+			if(subscribers.entrySet().stream().filter(e -> e.getKey().getId().equals(name)).count()>0) {
+				Session s = subscribers.entrySet().stream().filter(e -> e.getKey().getId().equals(name)).map(el -> el.getKey()).findFirst().get();
+				if(Duration.between(subscribers.get(s),LocalDateTime.now()).toMinutes()>60) subscribers.remove(s);
+				else {
+					try {
+						session.getBasicRemote().sendText("Utente iscritto da troppo poco, impossibile revocare");
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+		
+	}
+	
+	@OnClose
+	public void close() {
+		timer.cancel();
+		set = false;
+	}
+	
+
+}

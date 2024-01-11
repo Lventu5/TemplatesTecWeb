@@ -1,0 +1,44 @@
+package it.unibo.tw.web.beans;
+
+import java.time.LocalDateTime;
+
+public class Regalo {
+	private String nome, descrizione;
+	private int base, offer;
+	private LocalDateTime last;
+	public Regalo(String nome, String descrizione, int base) {
+		super();
+		this.nome = nome;
+		this.descrizione = descrizione;
+		this.base = base;
+		this.last = null;
+		this.offer = 0;
+	}
+	public LocalDateTime getLast() {
+		return last;
+	}
+	public void setLast(LocalDateTime last) {
+		this.last = last;
+	}
+	public String getNome() {
+		return nome;
+	}
+	public String getDescrizione() {
+		return descrizione;
+	}
+	public int getBase() {
+		return base;
+	}
+	public int getOffer() {
+		return offer;
+	}
+	public void setOffer(int offer) {
+		this.offer = offer;
+	}
+	@Override
+	public String toString() {
+		return nome + ", " + descrizione + ", offerta base = " + base + ", offerta corrente = " + offer;
+	}
+	
+
+}

@@ -1,0 +1,71 @@
+package it.unibo.tw.web.servlets;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import it.unibo.tw.web.beans.News;
+
+public class S2 extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	private final static String PATH = "D:\\loren\\eclipse-workspace\\es2221222C\\web\\news.txt";
+
+	@Override
+	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		boolean term = false;
+		File file = new File(PATH);
+		long ts = file.lastModified();
+		int cat = Integer.parseInt(request.getParameter("num"));
+		while (!term) {
+			long timeStamp = file.lastModified();
+			if (ts != timeStamp) {
+				ts = timeStamp;
+				List<News> news = new ArrayList<>();
+				String name = "", value = "", line = null;
+				int categ = 0, i = 0;
+				try (BufferedReader rd = new BufferedReader(new FileReader(file))) {
+					while ((line = rd.readLine()) != null) {
+						if (i == 0)
+							name += line.trim();
+						else if (i == 1) {
+							categ = Integer.parseInt(line.trim());
+						}
+						else if (i == 2)
+							value += line.trim();
+
+						i++;
+						if (i == 3) {
+							i = 0;
+							if (cat == categ) news.add(new News(name, cat, value));
+							name = "";
+							value = "";
+						}
+					}
+					Gson g = new Gson();
+					response.getWriter().append(g.toJson(news));
+					term = true;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+}

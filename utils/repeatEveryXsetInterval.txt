@@ -1,0 +1,17 @@
+<body onload="updateNum(); setInterval(()=>updateNum(), 86400000)">
+
+
+
+<script type="text/javascript">
+	function updateNum(){
+		fetch('?upd=true',{
+			method: 'GET'
+		})
+	}
+</script>
+
+
+
+if(request.getParameter("upd")!=null && Boolean.parseBoolean(request.getParameter("upd"))){
+	session.setAttribute("num", 0);
+}

@@ -1,0 +1,104 @@
+//POST BODY JSON
+
+fetch('J1.jsp', {
+	method: 'POST',
+	headers: {
+		'Accept': 'application/json',
+		'Content-Type': 'application/json',
+		'charset': 'UTF-8'
+	},
+	body: JSON.stringify({
+		val: this.value
+	}),
+	cache: 'default'
+})
+.then(response => response.json())
+.then((data) => {
+	document.getElementById('res').value = data.res
+})
+
+
+//POST BODY TXT
+
+fetch('s2', {
+	method: 'POST',
+	headers: {
+		'Accept': 'text/plain',
+	  	'Content-Type': 'text/plain',
+	  	'charset': 'UTF-8'
+	},
+	body: input,
+	cache: 'default'
+})
+.then(response => response.txt())
+.then((response) => {
+
+})
+
+
+//ASYNC/AWAIT
+
+async function send(input){
+	var html="";
+	const response = await fetch('s2', {
+	method: 'POST',
+	headers: {
+	  	'Accept': 'text/plain',
+	  	'Content-Type': 'text/plain',
+		'charset': 'UTF-8'
+	},
+	body: input,
+	cache: 'default'
+	})
+	const resp = await response.text()
+	return resp;
+}
+
+
+
+//GET
+
+fetch('s2?posX='+posX+'&posY='+posY, {
+	method: 'GET',
+	headers: {
+		'Accept': 'application/json',
+		'charset': 'UTF-8'
+	},
+	cache: 'no-store'
+})
+	.then(response => response.json())
+	.then((data) => {
+	html+="<ul>";
+	for(var i=0;i<data.length;i++){
+		html+="<li>"+data[i].name+" "+data[i].pos.x+","+data[i].pos.y+"</li>"
+	}
+	html+="</ul>";			  				
+	document.getElementById('res').innerHTML = html;
+})
+
+
+//FETCH RESULT XML
+		fetch('s1', {
+			method: 'POST',
+			headers: {
+				'Accept': 'text/xml',
+				'Content-Type': 'application/json',
+				'charset': 'UTF-8'
+			},
+			body: JSON.stringify({
+				nums: n
+			}),
+			cache: 'no-store'
+		})
+		.then(response => response.text())
+		.then((data) => {
+			var xml = parser.parseFromString(data, "text/xml");
+			var rootElement = xml.getElementsByTagName("root")[0];
+			var res = rootElement.getElementsByTagName("res")[0].innerHTML;
+			var sum = rootElement.getElementsByTagName("sum")[0].innerHTML;
+
+			document.getElementById('res1').innerHTML = "Somma righe uguale: "+res+ (res==="true" ? ", somma: "+sum : '') + "<br/>"
+			r1=res;
+			if(r2==='true' && r1==='true' && r3==='true') document.getElementById('tot').innerHTML = "L'elemento &egrave; un quadrato magico"
+			else if(r1==="false" || (r2!=='' && r2==="false") || (r3!=='' && r3==="false")) document.getElementById('tot').innerHTML = "L'elemento non &egrave; un quadrato magico"
+		})

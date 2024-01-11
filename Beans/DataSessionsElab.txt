@@ -1,0 +1,71 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpSession;
+
+public class Data implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Map<String, HttpSession> sessions;
+	private Map<String, Integer> elaborazioni;
+	private Map<Thread, HttpSession> runningRequests;
+	
+	public Data() {
+		super();
+		sessions = new HashMap<>();
+		
+		elaborazioni = new HashMap<>();
+		
+		runningRequests = new HashMap<>();
+	}
+	
+	public Map<String, HttpSession> getSessions() {
+		return sessions;
+	}
+	
+	public Map<String, Integer> getElaborazioni() {
+		return elaborazioni;
+	}
+	
+	public Map<Thread,HttpSession> getRunningRequests() {
+		return runningRequests;
+	}
+	
+	public synchronized List<String> getLastActiveSessons(int days){
+		final long today = System.currentTimeMillis();
+		final long maxTime = today - TimeUnit.DAYS.toMillis(days);
+		return sessions.keySet().stream().filter((k) -> sessions.get(k).getLastAccessedTime() >= maxTime).toList();
+	}
+	
+	public synchronized void startRequest(HttpSession session, Thread thread) {
+		runningRequests.put(thread, session);
+	}
+
+    public synchronized void stopRequest(Thread thread) {
+		if (!runningRequests.containsKey(thread)) {
+		    throw new IllegalArgumentException("Thread is not registered!");
+		}
+	
+		runningRequests.remove(thread);
+    }
+    
+    public synchronized void killRequest(long threadId) {
+    	final Optional<Thread> optThread = runningRequests.keySet().stream().filter(it -> it.threadId() == threadId)
+    		.findAny();
+
+    	if (optThread.isEmpty())
+    	    throw new IllegalArgumentException("Thread is not registered");
+
+    	final Thread thread = optThread.get();
+    	stopRequest(thread);
+    	thread.interrupt();
+    }
+	
+}

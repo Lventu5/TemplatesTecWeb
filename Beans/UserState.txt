@@ -1,0 +1,46 @@
+package it.unibo.tw.web.beans;
+
+import java.io.Serializable;
+
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+
+public class User implements Serializable, HttpSessionBindingListener {
+	private String uName, pwd;
+	private int state;
+
+	private static final long serialVersionUID = 1L;
+	
+	public User(String name, String pwd) {
+		super();
+		this.uName=name;
+		this.pwd=pwd;
+		this.state = 0;
+	}
+	
+	public String getUname() {
+		return this.uName;
+	}
+	
+	public String getPwd() {
+		return this.pwd;
+	}
+	
+	public int getState() {
+		return state;
+	}
+	
+	public void setFin() {
+		this.state=2;
+	}
+
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+		this.state = 1;
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent arg0) {
+		this.state = 0;	
+	}
+}

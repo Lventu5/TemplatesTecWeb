@@ -1,0 +1,29 @@
+package beans;
+
+import javax.websocket.EncodeException;
+import javax.websocket.Encoder;
+import javax.websocket.EndpointConfig;
+
+import com.google.gson.Gson;
+
+public class OperationEncoder implements Encoder.Text<OperationReq2> {
+	private Gson g;
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void init(EndpointConfig arg0) {
+		g = new Gson();
+		
+	}
+
+	@Override
+	public String encode(OperationReq2 arg0) throws EncodeException {
+		return g.toJson(arg0);
+	}
+
+}

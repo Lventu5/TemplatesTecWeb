@@ -1,0 +1,142 @@
+<%@ page session="true"%>
+<%@ page import="java.util.List"%>
+<%@ page import="it.unibo.tw.web.beans.User" %>
+<%@ page import="it.unibo.tw.web.beans.Data" %>
+<%@ page import="it.unibo.tw.web.beans.Prodotto" %>
+<%@	page import="java.util.Map.Entry"%>
+<%@	page import="com.google.gson.Gson"%>
+
+<jsp:useBean id="dati" class="it.unibo.tw.web.beans.Data" scope="application"/>
+<jsp:useBean id="catalogo" class="it.unibo.tw.web.beans.Catalogo" scope="application"/>
+
+<%
+Gson g = new Gson();
+int cartNum = (int)session.getAttribute("group");
+
+if((request.getParameter("id")!=null && !request.getParameter("id").isBlank())){
+	String id = request.getParameter("id");
+	int quant = 1;
+	boolean found = false;
+	
+	for(Prodotto p : dati.getCart(cartNum)){
+		if(p.getId().equals(id)) {
+			p.setQuant(1);
+			found=true;
+			break;
+		}
+	}
+	if(!found) dati.getCart(cartNum).add(new Prodotto(id,catalogo.getProd(id).getDesc(),catalogo.getProd(id).getPrice(),quant));
+}
+
+if(request.getParameter("buy")!=null){
+	((User)session.getAttribute("User")).setFin();
+	boolean allFin = true;
+	for( Entry<User,Integer> e : dati.getGroups().entrySet()){
+		if(e.getValue().intValue()==cartNum && e.getKey().getState()==1){
+			System.out.println(e.getKey());
+			allFin = false;
+			break;
+		}
+	}
+	
+	if(allFin){
+		boolean error = false;
+		for(Prodotto p : dati.getCart(cartNum)){
+			if(catalogo.getProd(p.getId()).getQuant()<p.getQuant()){
+				error = true;
+				break;
+			}
+			catalogo.getProd(p.getId()).setQuant(-p.getQuant());
+		}
+		
+		if(!error)dati.getCart(cartNum).clear();
+		response.sendRedirect( request.getContextPath() + "/logged.jsp");
+	}
+}
+
+%>
+
+<html>
+   <head>
+      <title>Cart</title>
+		<link type="text/css" href="styles/default.css" rel="stylesheet"></link>
+   </head>
+   <body>
+   	<h3 style="color: blue; text-align: right">Welcome <%= ((User)session.getAttribute("User")).getUname() %>. Gruppo <%= cartNum %></h3>
+   	<hr>
+      <div id="left" class="cat" style="float: left;">
+		<table>
+			<tr>
+				<th>Id</th>
+				<th>Description</th>
+				<th>Price</th>
+				<th>Quantity</th>
+				<th></th>
+			</tr>
+			<tbody id="catalogo"></tbody>
+		</table>
+		<script type="text/javascript">
+			
+			var html = ""
+			var arr = []
+			fetch('s2', {
+				method: 'GET',
+				cache: 'no-store'
+			})
+			.then(response => response.json())
+			.then(items => {
+				arr=items;
+				console.log(items);
+				for(var i=0; i<items.length; i++){
+					console.log(items[i].id);
+					html+="<tr>";
+					html=html+"<td>"+items[i].id+"</td>";
+					html=html+"<td>"+items[i].description+"</td>";
+					html=html+"<td>"+items[i].price+"</td>";
+					html=html+"<td>"+items[i].quant+"</td>";
+					html=html+"<td><input type='button' value='Add' id='add_"+i+"' onClick='add(event)'/></td>";
+					html+="</tr>";
+				}
+				console.log(html);
+				document.getElementById("catalogo").innerHTML += html;
+			})
+			
+			function add(e){
+				var index = new Number(e.target.id.split('_')[1]);
+				fetch('?add=true&id='+arr[index].id, {method : 'GET'})
+				.then(() => {window.location.reload()});
+			}
+			
+			
+		</script>
+			
+	</div>
+	<div id="cart" style="float: left; margin-left: 50px;">
+		<table>
+			<tr>
+				<th>Id</th>
+				<th>Description</th>
+				<th>Price</th>
+				<th>Quantity</th>
+			</tr>
+		<% 
+			for( Prodotto p : dati.getCart(cartNum)){
+		%>
+				<tr>
+					<td><%= p.getId() %></td>
+					<td><%= p.getDesc() %></td>
+					<td><%= p.getPrice() %></td>
+					<td><%= p.getQuant() %></td>
+				</tr>
+		<%
+			}
+		%>
+		</table>
+		<br/>
+		<form action="?buy=true">
+			<input type="submit" name="buy" value="Buy">
+		</form>
+	
+	</div>
+   </body>
+</html>
